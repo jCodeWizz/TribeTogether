@@ -2,15 +2,13 @@
 
 #include "Walnut/Application.h"
 #include "Walnut/Layer.h"
-
 #include "Walnut/Networking/Client.h"
 
 #include <glm/glm.hpp>
 
-namespace Cubed {
+namespace TT {
 
-	class ClientLayer : public Walnut::Layer
-	{
+	class ClientLayer : public Walnut::Layer {
 	public:
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
@@ -20,16 +18,15 @@ namespace Cubed {
 	private:
 		void OnDataReceived(const Walnut::Buffer buffer);
 	private:
-		glm::vec2 m_PlayerPosition{ 50, 50 };
 		glm::vec2 m_PlayerVelocity{ 0, 0 };
+		glm::vec2 m_PlayerPosition{ 50, 50 };
 
 		std::string m_ServerAddress;
 
 		Walnut::Client m_Client;
 		uint32_t m_PlayerID = 0;
 
-		struct PlayerData
-		{
+		struct PlayerData {
 			glm::vec2 Position;
 			glm::vec2 Velocity;
 		};
