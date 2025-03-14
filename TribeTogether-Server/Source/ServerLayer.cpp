@@ -57,6 +57,10 @@ namespace TT {
 
 	void ServerLayer::OnClientDisconnected(const Walnut::ClientInfo& clientInfo) {
 		WL_INFO_TAG("Server", "Client disconnected! ID={}", clientInfo.ID);
+
+		m_PlayerDataMutex.lock();
+		m_PlayerData.erase(clientInfo.ID);
+		m_PlayerDataMutex.unlock();
 	}
 
 	void ServerLayer::OnDataReceived(const Walnut::ClientInfo& clientInfo, const Walnut::Buffer buffer) {
