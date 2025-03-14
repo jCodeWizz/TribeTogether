@@ -7,6 +7,8 @@
 #include "glm/gtx/euler_angles.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+#include "ModelLoader.h"
+
 #include <array>
 #include <fstream>
 
@@ -24,7 +26,7 @@ namespace TT {
 	}
 
 	void Renderer::Init() {
-		InitBuffers();
+		InitBuffersModel();
 		InitPipeline();
 	}
 
@@ -71,6 +73,50 @@ namespace TT {
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 		vkCmdDrawIndexed(commandBuffer, 36, 1, 0, 0, 0);
+	}
+
+	void Renderer::RenderModel(const glm::vec3& position, const glm::vec3& rotation, float scale) {
+		glm::mat4 translation = glm::translate(glm::mat4(1.0f), position);
+		glm::mat4 rotationMat = glm::eulerAngleXYZ(glm::radians(rotation.x), glm::radians(rotation.y), glm::radians(rotation.z));
+		glm::mat4 scaling = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
+
+		VkCommandBuffer commandBuffer = Walnut::Application::GetActiveCommandBuffer();
+		auto wd = Walnut::Application::GetMainWindowData();
+
+		float viewportWidth = static_cast<float>(wd->Width);
+		float viewportHeight = static_cast<float>(wd->Height);
+
+		// Bind the graphics pipeline.
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
+
+		glm::mat4 cameraTransform = glm::translate(glm::mat4(1.0f), m_CameraPosition)
+			* glm::eulerAngleXYZ(glm::radians(m_CameraRotation.x), glm::radians(m_CameraRotation.y), glm::radians(m_CameraRotation.z));
+
+		m_PushConstants.ViewProjection = glm::perspectiveFov(glm::radians(45.0f), viewportWidth, viewportHeight, 0.1f, 1000.0f)
+			* glm::inverse(cameraTransform);
+
+		m_PushConstants.Transform = translation * rotationMat * scaling;
+
+		vkCmdPushConstants(commandBuffer, m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstants), &m_PushConstants);
+
+		VkDeviceSize offset = 0;
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, &m_VertexBuffer.Handle, &offset);
+		vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer.Handle, offset, VK_INDEX_TYPE_UINT32);
+
+		VkViewport vp{};
+		vp.y = viewportHeight;
+		vp.width = viewportWidth;
+		vp.height = -viewportHeight;
+		vp.minDepth = 0.0f;
+		vp.maxDepth = 1.0f;
+		vkCmdSetViewport(commandBuffer, 0, 1, &vp);
+
+		VkRect2D scissor{};
+		scissor.extent.width = wd->Width;
+		scissor.extent.height = wd->Height;
+		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(m_IndexCount), 1, 0, 0, 0);
 	}
 
 	void Renderer::RenderCube(const glm::vec3& position) {
@@ -148,19 +194,19 @@ namespace TT {
 
 		std::array<VkVertexInputBindingDescription, 1> binding_desc;
 		binding_desc[0].binding = 0;
-		binding_desc[0].stride = sizeof(glm::vec3) * 2;
+		binding_desc[0].stride = sizeof(glm::vec3);
 		binding_desc[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-		std::array<VkVertexInputAttributeDescription, 2> attribute_desc;
+		std::array<VkVertexInputAttributeDescription, 1> attribute_desc;
 		attribute_desc[0].location = 0;
 		attribute_desc[0].binding = binding_desc[0].binding;
 		attribute_desc[0].format = VK_FORMAT_R32G32B32_SFLOAT;
 		attribute_desc[0].offset = 0;
 
-		attribute_desc[1].location = 1;
+		/*attribute_desc[1].location = 1;
 		attribute_desc[1].binding = binding_desc[0].binding;
 		attribute_desc[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attribute_desc[1].offset = sizeof(glm::vec3);
+		attribute_desc[1].offset = sizeof(glm::vec3);*/
 
 		VkPipelineVertexInputStateCreateInfo vertex_input{ VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO };
 		vertex_input.vertexBindingDescriptionCount = (uint32_t)binding_desc.size();
@@ -242,6 +288,42 @@ namespace TT {
 		vkDestroyShaderModule(device, shader_stages[0].module, nullptr);
 		vkDestroyShaderModule(device, shader_stages[1].module, nullptr);
 	}
+
+	void Renderer::InitBuffersModel() {
+		std::vector<Vertex> vertices;
+		std::vector<uint32_t> indices;
+
+		if (!LoadModel("Assets/Models/untitled.obj", vertices, indices)) {
+			std::cerr << "Model loading failed!" << std::endl;
+			return;
+		}
+
+		for (auto& v : vertices) {
+			std::cout << "x: " << v.pos.x << " z: " << v.pos.z <<  "\n";
+		}
+
+		m_IndexCount = indices.size(); 
+
+		// Create Vertex Buffer
+		m_VertexBuffer.Usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+		CreateOrResizeBuffer(m_VertexBuffer, sizeof(Vertex) * vertices.size());
+
+		// Create Index Buffer
+		m_IndexBuffer.Usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+		CreateOrResizeBuffer(m_IndexBuffer, sizeof(uint32_t) * indices.size());
+
+		// Copy Data to GPU Buffers
+		void* vbMemory;
+		vkMapMemory(GetVulkanInfo()->Device, m_VertexBuffer.Memory, 0, sizeof(Vertex) * vertices.size(), 0, &vbMemory);
+		memcpy(vbMemory, vertices.data(), sizeof(Vertex) * vertices.size());
+		vkUnmapMemory(GetVulkanInfo()->Device, m_VertexBuffer.Memory);
+
+		void* ibMemory;
+		vkMapMemory(GetVulkanInfo()->Device, m_IndexBuffer.Memory, 0, sizeof(uint32_t) * indices.size(), 0, &ibMemory);
+		memcpy(ibMemory, indices.data(), sizeof(uint32_t) * indices.size());
+		vkUnmapMemory(GetVulkanInfo()->Device, m_IndexBuffer.Memory);
+	}
+
 
 
 	void Renderer::InitBuffers() {

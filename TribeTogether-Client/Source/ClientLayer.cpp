@@ -74,7 +74,7 @@ namespace TT {
 	void ClientLayer::OnRender() {
 		Walnut::Client::ConnectionStatus connectionStatus = m_Client.GetConnectionStatus();
 		if (connectionStatus == Walnut::Client::ConnectionStatus::Connected) {
-			m_Renderer.RenderCube(glm::vec3(m_PlayerPosition.x, 0.5f, m_PlayerPosition.y));
+			m_Renderer.RenderModel(glm::vec3(m_PlayerPosition.x, 0.5f, m_PlayerPosition.y), glm::vec3 {0.0f}, 1.0f);
 
 			m_PlayerDataMutex.lock();
 			std::map<uint32_t, PlayerData> playerData = m_PlayerData;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vulkan.h"
+#include "utils/Vulkan.h"
 
 #include "glm/glm.hpp"
 
@@ -17,7 +17,7 @@ namespace TT {
 
 	struct Vertex {
 		glm::vec3 pos;
-		glm::vec3 colour;
+		glm::vec3 normal;
 	};
 
 	class Renderer {
@@ -26,11 +26,13 @@ namespace TT {
 		void Shutdown();
 
 		void Render();
+		void RenderModel(const glm::vec3& position, const glm::vec3& rotation, float scale);
 		void RenderCube(const glm::vec3& position);
 		void RenderUI();
 	private:
 		void InitPipeline();
 		void InitBuffers();
+		void InitBuffersModel();
 
 		void CreateOrResizeBuffer(Buffer& buffer, uint64_t newSize);
 
@@ -52,6 +54,8 @@ namespace TT {
 		glm::vec3 m_CameraPosition{ 0, 20, 0 };
 		glm::vec3 m_CameraRotation{ -45, 0, 0 };
 		float m_CubeScale = 1.0f;
+
+		uint32_t m_IndexCount = 0;
 	};
 
 }
