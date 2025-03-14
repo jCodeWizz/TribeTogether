@@ -32,8 +32,7 @@ namespace TT {
 		Walnut::Client m_Client;
 		uint32_t m_PlayerID = 0;
 
-		struct PlayerData
-		{
+		struct PlayerData {
 			glm::vec2 Position;
 			glm::vec2 Velocity;
 		};

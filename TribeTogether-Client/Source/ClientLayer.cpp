@@ -15,8 +15,7 @@ namespace TT {
 
 	static Walnut::Buffer s_ScratchBuffer;
 
-	static void DrawRect(glm::vec2 position, glm::vec2 size, uint32_t color)
-	{
+	static void DrawRect(glm::vec2 position, glm::vec2 size, uint32_t color) {
 		ImDrawList* drawList = ImGui::GetBackgroundDrawList();
 		ImVec2 min = ImGui::GetWindowPos() + ImVec2(position.x, position.y);
 		ImVec2 max = min + ImVec2(size.x, size.y);
@@ -24,8 +23,7 @@ namespace TT {
 		drawList->AddRectFilled(min, max, color);
 	}
 
-	void ClientLayer::OnAttach()
-	{
+	void ClientLayer::OnAttach() {
 		s_ScratchBuffer.Allocate(10 * 1024 * 1024); // 10 MB
 
 		m_Client.SetDataReceivedCallback([this](const Walnut::Buffer buffer) { OnDataReceived(buffer); });
@@ -33,13 +31,11 @@ namespace TT {
 		m_Renderer.Init();
 	}
 
-	void ClientLayer::OnDetach()
-	{
+	void ClientLayer::OnDetach() {
 
 	}
 
-	void ClientLayer::OnUpdate(float ts)
-	{
+	void ClientLayer::OnUpdate(float ts) {
 		if (m_Client.GetConnectionStatus() != Walnut::Client::ConnectionStatus::Connected)
 			return;
 
@@ -56,8 +52,7 @@ namespace TT {
 			dir.x = 1;
 
 		// Optional (for gameplay reasons?)
-		if (glm::length(dir) > 0.0f)
-		{
+		if (glm::length(dir) > 0.0f) {
 			const float speed = 10.0f;
 			dir = glm::normalize(dir);
 			m_PlayerVelocity = dir * speed;
@@ -76,60 +71,27 @@ namespace TT {
 
 	}
 
-	void ClientLayer::OnRender()
-	{
-		// Let's draw some stuff here
-
-		// 1. bind pipeline
-		// 2. bind vertex/index buffers
-		// 3. draw call
-
+	void ClientLayer::OnRender() {
 		Walnut::Client::ConnectionStatus connectionStatus = m_Client.GetConnectionStatus();
-		if (connectionStatus == Walnut::Client::ConnectionStatus::Connected)
-		{
-			// play game
+		if (connectionStatus == Walnut::Client::ConnectionStatus::Connected) {
 			m_Renderer.RenderCube(glm::vec3(m_PlayerPosition.x, 0.5f, m_PlayerPosition.y));
 
 			m_PlayerDataMutex.lock();
 			std::map<uint32_t, PlayerData> playerData = m_PlayerData;
 			m_PlayerDataMutex.unlock();
 
-			for (const auto& [id, data] : playerData)
-			{
+			for (const auto& [id, data] : playerData) {
 				if (id == m_PlayerID)
 					continue;
 
 				m_Renderer.RenderCube(glm::vec3(data.Position.x, 0.5f, data.Position.y));
 			}
 		}
-
 	}
 
-	void ClientLayer::OnUIRender()
-	{
+	void ClientLayer::OnUIRender() {
 		Walnut::Client::ConnectionStatus connectionStatus = m_Client.GetConnectionStatus();
-		if (connectionStatus == Walnut::Client::ConnectionStatus::Connected)
-		{
-			if (false)
-			{
-				// play game
-				DrawRect(m_PlayerPosition, { 50.0f, 50.0f }, 0xffff00ff);
-
-				m_PlayerDataMutex.lock();
-				std::map<uint32_t, PlayerData> playerData = m_PlayerData;
-				m_PlayerDataMutex.unlock();
-
-				for (const auto& [id, data] : playerData)
-				{
-					if (id == m_PlayerID)
-						continue;
-
-					DrawRect(data.Position, { 50.0f, 50.0f }, 0xff00ff00);
-				}
-			}
-		}
-		else
-		{
+		if (connectionStatus != Walnut::Client::ConnectionStatus::Connected) {
 			ImGui::Begin("Connect to Server");
 
 			ImGui::InputText("Server address", &m_ServerAddress);
@@ -137,27 +99,21 @@ namespace TT {
 				ImGui::TextColored(ImColor(Walnut::UI::Colors::Theme::error), "Failed to connect.");
 			else if (connectionStatus == Walnut::Client::ConnectionStatus::Connecting)
 				ImGui::TextColored(ImColor(Walnut::UI::Colors::Theme::textDarker), "Connecting...");
-			if (ImGui::Button("Connect"))
-			{
+			if (ImGui::Button("Connect")) {
 				m_Client.ConnectToServer(m_ServerAddress);
 			}
 
 			ImGui::End();
 		}
-
-		ImGui::ShowDemoWindow();
-
 		m_Renderer.RenderUI();
 	}
 
-	void ClientLayer::OnDataReceived(const Walnut::Buffer buffer)
-	{
+	void ClientLayer::OnDataReceived(const Walnut::Buffer buffer) {
 		Walnut::BufferStreamReader stream(buffer);
 
 		PacketType type;
 		stream.ReadRaw(type);
-		switch (type)
-		{
+		switch (type) {
 		case PacketType::ClientConnect:
 
 			uint32_t idFromServer;
@@ -170,6 +126,7 @@ namespace TT {
 		case PacketType::ClientUpdate:
 
 			m_PlayerDataMutex.lock();
+			m_PlayerData.clear();
 			stream.ReadMap(m_PlayerData);
 			m_PlayerDataMutex.unlock();
 

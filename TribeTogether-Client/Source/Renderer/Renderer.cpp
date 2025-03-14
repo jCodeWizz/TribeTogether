@@ -12,8 +12,7 @@
 
 namespace TT {
 
-	static uint32_t ImGui_ImplVulkan_MemoryType(VkMemoryPropertyFlags properties, uint32_t type_bits)
-	{
+	static uint32_t ImGui_ImplVulkan_MemoryType(VkMemoryPropertyFlags properties, uint32_t type_bits) {
 		VkPhysicalDevice physicalDevice = TT::GetVulkanInfo()->PhysicalDevice;
 
 		VkPhysicalDeviceMemoryProperties prop;
@@ -24,19 +23,16 @@ namespace TT {
 		return 0xFFFFFFFF; // Unable to find memoryType
 	}
 
-	void Renderer::Init()
-	{
+	void Renderer::Init() {
 		InitBuffers();
 		InitPipeline();
 	}
 
-	void Renderer::Shutdown()
-	{
+	void Renderer::Shutdown() {
 
 	}
 
-	void Renderer::Render()
-	{
+	void Renderer::Render() {
 		VkCommandBuffer commandBuffer = Walnut::Application::GetActiveCommandBuffer();
 		auto wd = Walnut::Application::GetMainWindowData();
 
@@ -77,8 +73,7 @@ namespace TT {
 		vkCmdDrawIndexed(commandBuffer, 36, 1, 0, 0, 0);
 	}
 
-	void Renderer::RenderCube(const glm::vec3& position)
-	{
+	void Renderer::RenderCube(const glm::vec3& position) {
 		glm::vec3 translation = position * m_CubeScale;
 
 		VkCommandBuffer commandBuffer = Walnut::Application::GetActiveCommandBuffer();
@@ -120,12 +115,9 @@ namespace TT {
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 		vkCmdDrawIndexed(commandBuffer, 36, 1, 0, 0, 0);
-
-		// std::cout << "X " << translation.x << " Y " << translation.y << " Z " << translation.z << "\n";
 	}
 
-	void Renderer::RenderUI()
-	{
+	void Renderer::RenderUI() {
 		ImGui::Begin("Controls");
 
 		// ImGui::DragFloat3("Position", glm::value_ptr(m_CubePosition), 0.05f);
@@ -138,8 +130,7 @@ namespace TT {
 		ImGui::End();
 	}
 
-	void Renderer::InitPipeline()
-	{
+	void Renderer::InitPipeline() {
 		VkDevice device = GetVulkanInfo()->Device;
 		VkRenderPass renderPass = Walnut::Application::GetMainWindowData()->RenderPass;
 
@@ -253,20 +244,19 @@ namespace TT {
 	}
 
 
-	void Renderer::InitBuffers()
-	{
+	void Renderer::InitBuffers() {
 		VkDevice device = GetVulkanInfo()->Device;
 
 		TT::Vertex vertexData[8] = {
-			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(1.0f, 0.0f, 0.0f ) },
-			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(1.0f, 0.0f, 0.0f) },
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(1.0f, 1.0f, 0.0f ) },
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(1.0f, 1.0f, 0.0f) },
 			{ glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(1.0f, 0.0f, 0.0f) },
 			{ glm::vec3(0.5f, -0.5f,  0.5f), glm::vec3(1.0f, 0.0f, 0.0f) },
 
-			{ glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f) },
-			{ glm::vec3(0.5f,  0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f) },
-			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f) },
-			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f) }
+			{ glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f) },
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(1.0f, 1.0f, 0.0f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(1.0f, 1.0f, 0.0f) }
 		};
 
 		uint32_t indices[36] = {
@@ -305,11 +295,9 @@ namespace TT {
 		vkUnmapMemory(device, m_IndexBuffer.Memory);
 	}
 
-	VkShaderModule Renderer::LoadShader(const std::filesystem::path& path)
-	{
+	VkShaderModule Renderer::LoadShader(const std::filesystem::path& path) {
 		std::ifstream stream(path, std::ios::binary);
-		if (!stream)
-		{
+		if (!stream) {
 			WL_ERROR("Could not open file! {}", path.string());
 			return nullptr;
 		}
@@ -319,8 +307,7 @@ namespace TT {
 		stream.seekg(0, std::ios_base::beg);
 
 		std::vector<char> buffer(size);
-		if (!stream.read(buffer.data(), size))
-		{
+		if (!stream.read(buffer.data(), size)) {
 			WL_ERROR("Could not read file! {}", path.string());
 			return nullptr;
 		}
@@ -337,8 +324,7 @@ namespace TT {
 		return result;
 	}
 
-	void Renderer::CreateOrResizeBuffer(Buffer& buffer, uint64_t newSize)
-	{
+	void Renderer::CreateOrResizeBuffer(Buffer& buffer, uint64_t newSize) {
 		VkDevice device = GetVulkanInfo()->Device;
 
 		if (buffer.Handle != VK_NULL_HANDLE)
@@ -364,5 +350,4 @@ namespace TT {
 		VK_CHECK(vkBindBufferMemory(device, buffer.Handle, buffer.Memory, 0));
 		buffer.Size = req.size;
 	}
-
 }

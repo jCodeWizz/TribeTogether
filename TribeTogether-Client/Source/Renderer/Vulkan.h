@@ -8,9 +8,7 @@
 #include <string>
 
 namespace vkb {
-
 	const std::string to_string(VkResult result);
-
 }
 
 namespace TT {
@@ -21,7 +19,7 @@ namespace TT {
 
 #define VK_CHECK(x)                                                                    \
 	do                                                                                 \
-	{                                                                                  \
+{                                                                                  \
 		VkResult err = x;                                                              \
 		if (err)                                                                       \
 		{                                                                              \
