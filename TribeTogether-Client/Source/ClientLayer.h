@@ -2,9 +2,12 @@
 
 #include "Walnut/Application.h"
 #include "Walnut/Layer.h"
+
 #include "Walnut/Networking/Client.h"
 
 #include <glm/glm.hpp>
+
+#include "Renderer/Renderer.h"
 
 namespace TT {
 
@@ -14,12 +17,15 @@ namespace TT {
 		virtual void OnDetach() override;
 
 		virtual void OnUpdate(float ts) override;
+		virtual void OnRender() override;
 		virtual void OnUIRender() override;
 	private:
 		void OnDataReceived(const Walnut::Buffer buffer);
 	private:
+		Renderer m_Renderer;
+
+		glm::vec2 m_PlayerPosition{ 0, -20 };
 		glm::vec2 m_PlayerVelocity{ 0, 0 };
-		glm::vec2 m_PlayerPosition{ 50, 50 };
 
 		std::string m_ServerAddress;
 
@@ -34,5 +40,4 @@ namespace TT {
 		std::mutex m_PlayerDataMutex;
 		std::map<uint32_t, PlayerData> m_PlayerData;
 	};
-
 }
