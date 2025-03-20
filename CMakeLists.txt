@@ -26,8 +26,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 
 # Add the executable
-add_executable(TribeTogether main.cpp
-        Main.cpp)
+add_executable(TribeTogether src/Main.cpp src/Main.cpp
+        src/VulkanApp.h
+        src/VulkanApp.cpp)
 
 # Link libraries
 target_link_libraries(TribeTogether PRIVATE Vulkan::Vulkan glfw glm)
