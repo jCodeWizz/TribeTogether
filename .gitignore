@@ -31,7 +31,6 @@
 *.out
 *.app
 
-#.idea
 /.idea/
 /cmake-build-debug/
 /assets/shaders/bin/
