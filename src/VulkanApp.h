@@ -8,8 +8,20 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <optional>
+#include <set>
 
 namespace TT {
+
+    struct QueueFamilyIndices {
+        std::optional<uint32_t> graphicsFamily;
+        std::optional<uint32_t> presentFamily;
+
+        bool isComplete() {
+            return graphicsFamily.has_value() && presentFamily.has_value();
+        }
+    };
+
     class VulkanApp {
     public:
         void run();
@@ -17,6 +29,11 @@ namespace TT {
         GLFWwindow* window;
 
         VkInstance instance;
+        VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+        VkDevice device;
+        VkQueue graphicsQueue;
+        VkSurfaceKHR surface;
+        VkQueue presentQueue;
 
         void initWindow();
         void initVulkan();
@@ -24,5 +41,10 @@ namespace TT {
         void cleanup();
 
         void createInstance();
+        void pickPhysicalDevice();
+        bool isDeviceSuitable(VkPhysicalDevice device);
+        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+        void createLogicalDevice();
+        void createSurface();
     };
 }
