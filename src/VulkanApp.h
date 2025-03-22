@@ -5,16 +5,15 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include <fstream>
 #include <vector>
-#include <string>
 #include <optional>
-#include <set>
-#include <algorithm>
 #include <cstdint>
-#include <limits>
 
 namespace TT {
+
+    const int MAX_FRAMES_IN_FLIGHT = 2;
+    const uint32_t WIDTH = 800;
+    const uint32_t HEIGHT = 600;
 
     struct QueueFamilyIndices {
         std::optional<uint32_t> graphicsFamily;
@@ -34,6 +33,8 @@ namespace TT {
     class VulkanApp {
     public:
         void run();
+
+        bool frameBufferResized = false;
     private:
         const std::vector<const char*> deviceExtensions = {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME
@@ -57,11 +58,12 @@ namespace TT {
         VkPipeline graphicsPipeline;
         std::vector<VkFramebuffer> swapChainFrameBuffers;
         VkCommandPool commandPool;
-        VkCommandBuffer commandBuffer;
-        VkSemaphore imageAvailableSemaphore;
-        VkSemaphore renderFinishedSemaphore;
-        VkFence inFlightFence;
-
+        std::vector<VkCommandBuffer> commandBuffers;
+        std::vector<VkSemaphore> imageAvailableSemaphores;
+        std::vector<VkSemaphore> renderFinishedSemaphores;
+        std::vector<VkFence> inFlightFences;
+        uint32_t currentFrame = 0;
+        uint32_t imageIndex;
         void initWindow();
         void initVulkan();
         void mainLoop();
@@ -85,9 +87,11 @@ namespace TT {
         VkShaderModule createShaderModule(const std::vector<char>& code);
         void createFrameBuffers();
         void createCommandPool();
-        void createCommandBuffer();
+        void createCommandBuffers();
         void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
         void drawFrame();
         void createSyncObjects();
+        void recreateSwapChain();
+        void cleanupSwapChain();
     };
 }
