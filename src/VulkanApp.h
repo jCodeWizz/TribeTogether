@@ -55,7 +55,12 @@ namespace TT {
         VkRenderPass renderPass;
         VkPipelineLayout pipelineLayout;
         VkPipeline graphicsPipeline;
-        std::vector<VkFramebuffer> swapChainFramebuffers;
+        std::vector<VkFramebuffer> swapChainFrameBuffers;
+        VkCommandPool commandPool;
+        VkCommandBuffer commandBuffer;
+        VkSemaphore imageAvailableSemaphore;
+        VkSemaphore renderFinishedSemaphore;
+        VkFence inFlightFence;
 
         void initWindow();
         void initVulkan();
@@ -78,6 +83,11 @@ namespace TT {
         void createRenderPass();
         void createGraphicsPipeline();
         VkShaderModule createShaderModule(const std::vector<char>& code);
-        void createFramebuffers();
+        void createFrameBuffers();
+        void createCommandPool();
+        void createCommandBuffer();
+        void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+        void drawFrame();
+        void createSyncObjects();
     };
 }
