@@ -15,6 +15,36 @@ namespace TT {
     const uint32_t WIDTH = 800;
     const uint32_t HEIGHT = 600;
 
+    struct Vertex {
+        glm::vec2 position;
+        glm::vec3 colour;
+
+        static VkVertexInputBindingDescription getBindingDescription() {
+            VkVertexInputBindingDescription bindingDescription{};
+            bindingDescription.binding = 0;
+            bindingDescription.stride = sizeof(Vertex);
+            bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+            return bindingDescription;
+        }
+
+        static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
+            std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+            attributeDescriptions[0].binding = 0;
+            attributeDescriptions[0].location = 0;
+            attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+            attributeDescriptions[0].offset = offsetof(Vertex, position);
+
+            attributeDescriptions[1].binding = 0;
+            attributeDescriptions[1].location = 1;
+            attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescriptions[1].offset = offsetof(Vertex, colour);
+
+            return attributeDescriptions;
+        }
+    };
+
     struct QueueFamilyIndices {
         std::optional<uint32_t> graphicsFamily;
         std::optional<uint32_t> presentFamily;
@@ -30,12 +60,20 @@ namespace TT {
         std::vector<VkPresentModeKHR> presentModes;
     };
 
+    const std::vector<Vertex> vertices = {
+        {{0.0f, -0.5f}, {1.0f, 1.0f, 0.0f}},
+        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    };
+
     class VulkanApp {
     public:
         void run();
 
         bool frameBufferResized = false;
     private:
+
+
         const std::vector<const char*> deviceExtensions = {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME
         };
@@ -64,6 +102,9 @@ namespace TT {
         std::vector<VkFence> inFlightFences;
         uint32_t currentFrame = 0;
         uint32_t imageIndex;
+        VkBuffer vertexBuffer;
+        VkDeviceMemory vertexBufferMemory;
+
         void initWindow();
         void initVulkan();
         void mainLoop();
@@ -93,5 +134,7 @@ namespace TT {
         void createSyncObjects();
         void recreateSwapChain();
         void cleanupSwapChain();
+        void createVertexBuffer();
+        uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
     };
 }
