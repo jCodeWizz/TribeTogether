@@ -16,7 +16,7 @@ namespace TT {
     const uint32_t HEIGHT = 600;
 
     struct Vertex {
-        glm::vec2 position;
+        glm::vec3 position;
         glm::vec3 colour;
 
         static VkVertexInputBindingDescription getBindingDescription() {
@@ -61,9 +61,32 @@ namespace TT {
     };
 
     const std::vector<Vertex> vertices = {
-        {{0.0f, -0.5f}, {1.0f, 1.0f, 0.0f}},
-        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+        // Front face
+        {{-0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}}, // 0 - Red
+        {{ 0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}}, // 1 - Green
+        {{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}, // 2 - Blue
+        {{-0.5f,  0.5f,  0.5f}, {1.0f, 1.0f, 0.0f}}, // 3 - Yellow
+
+        // Back face
+        {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 1.0f}}, // 4 - Magenta
+        {{ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 1.0f}}, // 5 - Cyan
+        {{ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}}, // 6 - White
+        {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}}, // 7 - Black
+    };
+
+    const std::vector<uint16_t> indices = {
+        // Front face
+        0, 1, 2, 2, 3, 0,
+        // Back face
+        4, 5, 6, 6, 7, 4,
+        // Left face
+        4, 0, 3, 3, 7, 4,
+        // Right face
+        1, 5, 6, 6, 2, 1,
+        // Top face
+        3, 2, 6, 6, 7, 3,
+        // Bottom face
+        4, 5, 1, 1, 0, 4
     };
 
     class VulkanApp {
@@ -104,6 +127,8 @@ namespace TT {
         uint32_t imageIndex;
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
+        VkBuffer indexBuffer;
+        VkDeviceMemory indexBufferMemory;
 
         void initWindow();
         void initVulkan();
@@ -135,6 +160,9 @@ namespace TT {
         void recreateSwapChain();
         void cleanupSwapChain();
         void createVertexBuffer();
+        void createIndexBuffer();
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+        void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+        void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     };
 }
