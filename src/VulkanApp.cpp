@@ -20,6 +20,13 @@ namespace TT {
         cleanup();
     }
 
+    void onKeyPress(GLFWwindow* window, int key, int scancode, int action, int mods) {
+        auto app = static_cast<VulkanApp*>(glfwGetWindowUserPointer(window));
+        if (app) {
+            app->handleKeyPress(key, scancode, action, mods);
+        }
+    }
+
     void VulkanApp::initWindow() {
         glfwInit();
 
@@ -28,6 +35,7 @@ namespace TT {
         window = glfwCreateWindow(WIDTH, HEIGHT, "Tribe Together // v0.0.1pa", nullptr, nullptr);
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+        glfwSetKeyCallback(window, onKeyPress);
     }
 
     void VulkanApp::initVulkan() {
@@ -40,7 +48,6 @@ namespace TT {
         createRenderPass();
         createGraphicsPipeline();
         createFrameBuffers();
-        recreateSwapChain();
         createCommandPool();
         createVertexBuffer();
         createIndexBuffer();
@@ -427,6 +434,8 @@ namespace TT {
     }
 
     void VulkanApp::recreateSwapChain() {
+        std::cout << "Resized" << "\n";
+
         int width = 0, height = 0;
         glfwGetFramebufferSize(window, &width, &height);
         while (width == 0 || height == 0) {
@@ -739,6 +748,10 @@ namespace TT {
     }
 
     void VulkanApp::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
+        glm::mat4 translation = glm::translate(glm::mat4(1.0f), m_CubePosition);
+        glm::mat4 rotationMat = glm::eulerAngleXYZ(glm::radians(m_CubeRotation.x), glm::radians(m_CubeRotation.y), glm::radians(m_CubeRotation.z));
+        glm::mat4 scaling = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags = 0; // Optional
@@ -763,6 +776,17 @@ namespace TT {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
         VkBuffer vertexBuffers[] = {vertexBuffer};
         VkDeviceSize offsets[] = {0};
+
+        glm::mat4 cameraTransform = glm::translate(glm::mat4(1.0f), m_CameraPosition)
+            * glm::eulerAngleXYZ(glm::radians(m_CameraRotation.x), glm::radians(m_CameraRotation.y), glm::radians(m_CameraRotation.z));
+
+        m_PushConstants.ViewProjection = glm::perspectiveFov(glm::radians(45.0f), static_cast<float>(WIDTH), static_cast<float>(HEIGHT), 0.1f, 1000.0f)
+            * glm::inverse(cameraTransform);
+
+        m_PushConstants.Transform = translation * rotationMat * scaling;
+
+        vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstants), &m_PushConstants);
+
 
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
@@ -826,10 +850,39 @@ namespace TT {
     void VulkanApp::mainLoop() {
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
+            update();
             drawFrame();
         }
 
         vkDeviceWaitIdle(device);
+    }
+
+    void VulkanApp::update() {
+
+    }
+
+    void VulkanApp::handleKeyPress(int key, int scancode, int action, int mods) {
+        if (action == GLFW_PRESS) {
+            if (key == GLFW_KEY_A) {
+                m_CameraPosition.x += 1.0f;
+            }
+            if (key == GLFW_KEY_D) {
+                m_CameraPosition.x -= 1.0f;
+            }
+            if (key == GLFW_KEY_W) {
+                m_CameraPosition.z -= 1.0f;
+            }
+            if (key == GLFW_KEY_S) {
+                m_CameraPosition.z += 1.0f;
+            }
+
+            if (key == GLFW_KEY_LEFT) {
+                m_CameraRotation.y += 10.0f;
+            }
+            if (key == GLFW_KEY_RIGHT) {
+                m_CameraRotation.y -= 10.0f;
+            }
+        }
     }
 
     void VulkanApp::drawFrame() {

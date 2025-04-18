@@ -1,19 +1,22 @@
 #pragma once
 #define GGLFW_INCLUDE_VULKAN
+#define GLM_ENABLE_EXPERIMENTAL
 
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/euler_angles.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #include <vector>
 #include <optional>
 #include <cstdint>
 
 namespace TT {
-
     const int MAX_FRAMES_IN_FLIGHT = 2;
-    const uint32_t WIDTH = 800;
-    const uint32_t HEIGHT = 600;
+    const uint32_t WIDTH = 1280;
+    const uint32_t HEIGHT = 720;
 
     struct Vertex {
         glm::vec3 position;
@@ -33,7 +36,7 @@ namespace TT {
 
             attributeDescriptions[0].binding = 0;
             attributeDescriptions[0].location = 0;
-            attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+            attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
             attributeDescriptions[0].offset = offsetof(Vertex, position);
 
             attributeDescriptions[1].binding = 0;
@@ -61,41 +64,81 @@ namespace TT {
     };
 
     const std::vector<Vertex> vertices = {
-        // Front face
-        {{-0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}}, // 0 - Red
-        {{ 0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}}, // 1 - Green
-        {{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}, // 2 - Blue
-        {{-0.5f,  0.5f,  0.5f}, {1.0f, 1.0f, 0.0f}}, // 3 - Yellow
+        // Front face (red)
+        {{-0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{-0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}},
 
-        // Back face
-        {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 1.0f}}, // 4 - Magenta
-        {{ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 1.0f}}, // 5 - Cyan
-        {{ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}}, // 6 - White
-        {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}}, // 7 - Black
+        // Back face (green)
+        {{ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+
+        // Left face (blue)
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}},
+        {{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}},
+        {{-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}},
+        {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}},
+
+        // Right face (yellow)
+        {{ 0.5f, -0.5f,  0.5f}, {1.0f, 1.0f, 0.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 0.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 0.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, {1.0f, 1.0f, 0.0f}},
+
+        // Top face (cyan)
+        {{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 1.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 1.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 1.0f}},
+        {{-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 1.0f}},
+
+        // Bottom face (magenta)
+        {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 1.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 1.0f}},
+        {{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 1.0f}},
+        {{-0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 1.0f}},
     };
 
     const std::vector<uint16_t> indices = {
         // Front face
         0, 1, 2, 2, 3, 0,
+
         // Back face
         4, 5, 6, 6, 7, 4,
+
         // Left face
-        4, 0, 3, 3, 7, 4,
+        8, 9, 10, 10, 11, 8,
+
         // Right face
-        1, 5, 6, 6, 2, 1,
+        12, 13, 14, 14, 15, 12,
+
         // Top face
-        3, 2, 6, 6, 7, 3,
+        16, 17, 18, 18, 19, 16,
+
         // Bottom face
-        4, 5, 1, 1, 0, 4
+        20, 21, 22, 22, 23, 20
     };
 
     class VulkanApp {
     public:
         void run();
+        void handleKeyPress(int key, int scancode, int action, int mods);
 
         bool frameBufferResized = false;
-    private:
 
+    private:
+        struct PushConstants {
+            glm::mat4 ViewProjection;
+            glm::mat4 Transform;
+        } m_PushConstants;
+
+        glm::vec3 m_CubePosition{0.0f, 0.0f, -2.0f};
+        glm::vec3 m_CubeRotation{0.0f, 0.0f, 0.0f};
+
+        glm::vec3 m_CameraPosition{0, 0, 2};
+        glm::vec3 m_CameraRotation{0, 0, 0};
 
         const std::vector<const char*> deviceExtensions = {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME
@@ -133,6 +176,7 @@ namespace TT {
         void initWindow();
         void initVulkan();
         void mainLoop();
+        void update();
         void cleanup();
 
         void createInstance();
@@ -162,7 +206,8 @@ namespace TT {
         void createVertexBuffer();
         void createIndexBuffer();
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-        void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+        void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+                          VkBuffer& buffer, VkDeviceMemory& bufferMemory);
         void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     };
 }
