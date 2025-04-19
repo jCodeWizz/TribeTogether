@@ -8,6 +8,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/euler_angles.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "input/Input.h"
 
 #include <vector>
 #include <optional>
@@ -124,8 +125,6 @@ namespace TT {
     class VulkanApp {
     public:
         void run();
-        void handleKeyPress(int key, int scancode, int action, int mods);
-
         bool frameBufferResized = false;
 
     private:

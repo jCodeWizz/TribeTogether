@@ -1,4 +1,5 @@
 #include "VulkanApp.h"
+#include "input/Input.h"
 
 #include <fstream>
 #include <string>
@@ -20,13 +21,6 @@ namespace TT {
         cleanup();
     }
 
-    void onKeyPress(GLFWwindow* window, int key, int scancode, int action, int mods) {
-        auto app = static_cast<VulkanApp*>(glfwGetWindowUserPointer(window));
-        if (app) {
-            app->handleKeyPress(key, scancode, action, mods);
-        }
-    }
-
     void VulkanApp::initWindow() {
         glfwInit();
 
@@ -35,7 +29,7 @@ namespace TT {
         window = glfwCreateWindow(WIDTH, HEIGHT, "Tribe Together // v0.0.1pa", nullptr, nullptr);
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
-        glfwSetKeyCallback(window, onKeyPress);
+        glfwSetKeyCallback(window, Input::onKeyPress);
     }
 
     void VulkanApp::initVulkan() {
@@ -511,7 +505,7 @@ namespace TT {
         vkDestroyImageView(device, depthImageView, nullptr);
         vkDestroyImage(device, depthImage, nullptr);
         vkFreeMemory(device, depthImageMemory, nullptr);
-        
+
         for (size_t i = 0; i < swapChainFrameBuffers.size(); i++) {
             vkDestroyFramebuffer(device, swapChainFrameBuffers[i], nullptr);
         }
@@ -1091,29 +1085,24 @@ namespace TT {
     }
 
     void VulkanApp::update() {
-    }
+        if (Input::isKeyDown(GLFW_KEY_A)) {
+            m_CameraPosition.x -= 0.1f;
+        }
+        if (Input::isKeyDown(GLFW_KEY_D)) {
+            m_CameraPosition.x += 0.1f;
+        }
+        if (Input::isKeyDown(GLFW_KEY_W)) {
+            m_CameraPosition.z -= 0.1f;
+        }
+        if (Input::isKeyDown(GLFW_KEY_S)) {
+            m_CameraPosition.z += 0.1f;
+        }
 
-    void VulkanApp::handleKeyPress(int key, int scancode, int action, int mods) {
-        if (action == GLFW_PRESS) {
-            if (key == GLFW_KEY_A) {
-                m_CameraPosition.x += 1.0f;
-            }
-            if (key == GLFW_KEY_D) {
-                m_CameraPosition.x -= 1.0f;
-            }
-            if (key == GLFW_KEY_W) {
-                m_CameraPosition.z -= 1.0f;
-            }
-            if (key == GLFW_KEY_S) {
-                m_CameraPosition.z += 1.0f;
-            }
-
-            if (key == GLFW_KEY_LEFT) {
-                m_CameraRotation.y += 10.0f;
-            }
-            if (key == GLFW_KEY_RIGHT) {
-                m_CameraRotation.y -= 10.0f;
-            }
+        if (Input::isKeyDown(GLFW_KEY_LEFT)) {
+            m_CameraRotation.y += 3.0f;
+        }
+        if (Input::isKeyDown(GLFW_KEY_RIGHT)) {
+            m_CameraRotation.y -= 3.0f;
         }
     }
 
