@@ -518,8 +518,8 @@ namespace TT {
     }
 
     void VulkanApp::createGraphicsPipeline() {
-        auto vertShaderCode = readFile("../assets/shaders/bin/basic.vert.spirv");
-        auto fragShaderCode = readFile("../assets/shaders/bin/basic.frag.spirv");
+        auto vertShaderCode = readFile("assets/shaders/bin/basic.vert.spirv");
+        auto fragShaderCode = readFile("assets/shaders/bin/basic.frag.spirv");
 
         VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
         VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

@@ -5,8 +5,6 @@ namespace TT::Input {
     void onKeyPress(GLFWwindow* window, int key, int scancode, int action, int mods) {
         key -= 32;
 
-        std::cout << "k: " << key << "\n";
-
         if (action == GLFW_PRESS) {
             if (key > 0 && key < keys.size()) {
                 keys[key] = true;
@@ -16,8 +14,6 @@ namespace TT::Input {
                 keys[key] = false;
             }
         }
-
-        std::cout << keys[key] << "\n";
     }
 
     bool isKeyDown(const int &key) {
