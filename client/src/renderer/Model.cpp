@@ -7,13 +7,13 @@ namespace TT {
 
     }
 
-    Model::Model(VkDevice &device, uint32_t memType, const std::string& path) {
+    Model::Model(VkDevice &device, VkPhysicalDevice physicalDevice, const std::string& path) {
         if (!LoadModel(path, m_Vertices, m_Indices, m_IndexCount)) {
             std::cerr << "Failed to load model: " << path << "\n";
             return;
         }
 
-        CreateBuffers(device, memType);
+        CreateBuffers(device, physicalDevice);
     }
 
     Model::~Model() {
@@ -24,18 +24,31 @@ namespace TT {
 
     }
 
-    void Model::CreateBuffers(VkDevice &device, uint32_t memType) {
+    void Model::CreateBuffers(VkDevice &device, VkPhysicalDevice physicalDevice) {
         m_VertexBuffer.Usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-        CreateOrResizeBuffer(device, memType, m_VertexBuffer, sizeof(Vertex) * m_Vertices.size());
+        CreateOrResizeBuffer(device, physicalDevice, m_VertexBuffer, sizeof(Vertex) * m_Vertices.size());
 
         m_IndexBuffer.Usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-        CreateOrResizeBuffer(device, memType, m_IndexBuffer, sizeof(uint32_t) * m_Indices.size());
+        CreateOrResizeBuffer(device, physicalDevice, m_IndexBuffer, sizeof(uint32_t) * m_Indices.size());
 
 
         CopyDataToGPU(device);
     }
 
-    void Model::CreateOrResizeBuffer(VkDevice &device, uint32_t memType, Buffer& buffer, uint64_t newSize) {
+    uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+        VkPhysicalDeviceMemoryProperties memProperties;
+        vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+
+        for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+                return i;
+            }
+        }
+
+        throw std::runtime_error("failed to find suitable memory type!");
+    }
+
+    void Model::CreateOrResizeBuffer(VkDevice &device, VkPhysicalDevice physicalDevice, Buffer& buffer, uint64_t newSize) {
         if (buffer.Handle != VK_NULL_HANDLE)
             vkDestroyBuffer(device, buffer.Handle, nullptr);
         if (buffer.Handle != VK_NULL_HANDLE)
@@ -45,7 +58,7 @@ namespace TT {
         bufferCI.size = newSize;
         bufferCI.usage = buffer.Usage;
         bufferCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        if(!vkCreateBuffer(device, &bufferCI, nullptr, &buffer.Handle)) {
+        if(vkCreateBuffer(device, &bufferCI, nullptr, &buffer.Handle) != VK_SUCCESS) {
             std::cerr << "Error Model 1" << "\n";
         }
 
@@ -57,12 +70,12 @@ namespace TT {
         alloc_info.allocationSize = req.size;
         //alloc_info.memoryTypeIndex = ImGui_ImplVulkan_MemoryType(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, req.memoryTypeBits);
         // FUNCTION TO CALL TODO: alloc_info.memoryTypeIndex = findMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-        alloc_info.memoryTypeIndex = memType;
-        if(!vkAllocateMemory(device, &alloc_info, nullptr, &buffer.Memory)) {
+        alloc_info.memoryTypeIndex = findMemoryType(physicalDevice, req.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+        if(vkAllocateMemory(device, &alloc_info, nullptr, &buffer.Memory) != VK_SUCCESS) {
             std::cerr << "Error Model 2" << "\n";
         }
 
-        if(vkBindBufferMemory(device, buffer.Handle, buffer.Memory, 0)) {
+        if(vkBindBufferMemory(device, buffer.Handle, buffer.Memory, 0) != VK_SUCCESS) {
             std::cerr << "Error Model 3" << "\n";
         }
 

@@ -54,10 +54,10 @@ namespace TT {
 
     public:
         Model();
-        Model(VkDevice &device, uint32_t memType, const std::string& path);
+        Model(VkDevice &device, VkPhysicalDevice physicalDevice, const std::string& path);
         ~Model();
 
-        void CreateBuffers(VkDevice &device, uint32_t memType);
+        void CreateBuffers(VkDevice &device, VkPhysicalDevice physicalDevice);
         void Destroy();
 
         const Buffer& GetVertexBuffer() const { return m_VertexBuffer; }
@@ -65,7 +65,7 @@ namespace TT {
         uint32_t GetIndexCount() const { return m_IndexCount; }
     private:
         void CopyDataToGPU(VkDevice &device);
-        void CreateOrResizeBuffer(VkDevice &device, uint32_t memType, Buffer& buffer, uint64_t newSize);
+        void CreateOrResizeBuffer(VkDevice &device, VkPhysicalDevice physicalDevice, Buffer& buffer, uint64_t newSize);
 
         std::vector<Vertex> m_Vertices;
         std::vector<uint32_t> m_Indices;

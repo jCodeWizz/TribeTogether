@@ -19,8 +19,6 @@ find_package(Vulkan REQUIRED)
 
 add_executable(client_app
         src/Main.cpp
-        src/VulkanApp.cpp
-        src/VulkanApp.h
         src/input/Input.cpp
         src/input/Input.h
         src/renderer/Model.cpp
