@@ -1,67 +1,98 @@
 #pragma once
-#define GGLFW_INCLUDE_VULKAN
-#define GLM_ENABLE_EXPERIMENTAL
 
+#include "Model.h"
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/euler_angles.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "input/Input.h"
-#include "renderer/Model.h"
 #include <vector>
 #include <optional>
 #include <cstdint>
+#include "../input/Input.h"
+#include <fstream>
+#include <string>
+#include <set>
+#include <algorithm>
+#include <iostream>
+#include <limits>
 
-namespace TT {
+namespace TT::Renderer {
 
-    class VulkanApp {
-    public:
-        void run();
-        bool frameBufferResized = false;
+    inline struct PushConstants {
+        glm::mat4 ViewProjection;
+        glm::mat4 Transform;
+    } m_PushConstants;
 
-        VkDevice device;
-        uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    private:
-        GLFWwindow* window;
+    inline glm::vec3 m_CameraPosition{0, 0, 2};
+    inline glm::vec3 m_CameraRotation{0, 0, 0};
 
-        VkInstance instance;
-        VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-        VkQueue graphicsQueue;
-        VkSurfaceKHR surface;
-        VkQueue presentQueue;
-        VkSwapchainKHR swapChain;
-        std::vector<VkImage> swapChainImages;
-        VkFormat swapChainImageFormat;
-        VkExtent2D swapChainExtent;
-        std::vector<VkImageView> swapChainImageViews;
-        VkRenderPass renderPass;
-        VkPipelineLayout pipelineLayout;
-        VkPipeline graphicsPipeline;
-        std::vector<VkFramebuffer> swapChainFrameBuffers;
-        VkCommandPool commandPool;
-        std::vector<VkCommandBuffer> commandBuffers;
-        std::vector<VkSemaphore> imageAvailableSemaphores;
-        std::vector<VkSemaphore> renderFinishedSemaphores;
-        std::vector<VkFence> inFlightFences;
-        uint32_t currentFrame = 0;
-        uint32_t imageIndex;
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
-        VkBuffer indexBuffer;
-        VkDeviceMemory indexBufferMemory;
-        VkImage depthImage;
-        VkDeviceMemory depthImageMemory;
-        VkImageView depthImageView;
+    const std::vector<const char*> deviceExtensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
 
-        void initWindow();
-        void initVulkan();
-        void mainLoop();
-        void update();
-        void cleanup();
+    constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+    constexpr uint32_t WIDTH = 1280;
+    constexpr uint32_t HEIGHT = 720;
 
-        void createInstance();
+    struct QueueFamilyIndices {
+        std::optional<uint32_t> graphicsFamily;
+        std::optional<uint32_t> presentFamily;
+
+        bool isComplete() {
+            return graphicsFamily.has_value() && presentFamily.has_value();
+        }
+    };
+
+    struct SwapChainSupportDetails {
+        VkSurfaceCapabilitiesKHR capabilities;
+        std::vector<VkSurfaceFormatKHR> formats;
+        std::vector<VkPresentModeKHR> presentModes;
+    };
+
+    static void init();
+    static void startRender();
+    static void renderModel();
+    static void flushRender();
+    static void cleanup();
+
+    /////////////////////////////
+    ///
+    /// Vulkan / Rendering variables
+    ///
+    /////////////////////////////
+
+    bool frameBufferResized = false;
+
+    GLFWwindow* window;
+    VkInstance instance;
+    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    VkDevice device;
+    VkQueue graphicsQueue;
+    VkSurfaceKHR surface;
+    VkQueue presentQueue;
+    VkSwapchainKHR swapChain;
+    std::vector<VkImage> swapChainImages;
+    VkFormat swapChainImageFormat;
+    VkExtent2D swapChainExtent;
+    std::vector<VkImageView> swapChainImageViews;
+    VkRenderPass renderPass;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
+    std::vector<VkFramebuffer> swapChainFrameBuffers;
+    VkCommandPool commandPool;
+    std::vector<VkCommandBuffer> commandBuffers;
+    std::vector<VkSemaphore> imageAvailableSemaphores;
+    std::vector<VkSemaphore> renderFinishedSemaphores;
+    std::vector<VkFence> inFlightFences;
+    uint32_t currentFrame = 0;
+    uint32_t imageIndex;
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
+
+    void createInstance();
         void pickPhysicalDevice();
         bool isDeviceSuitable(VkPhysicalDevice device);
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
@@ -99,6 +130,6 @@ namespace TT {
         void endSingleTimeCommands(VkCommandBuffer commandBuffer);
         void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
         VkCommandBuffer beginSingleTimeCommands();
-
-    };
+        uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 }
+

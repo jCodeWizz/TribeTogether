@@ -2,27 +2,32 @@
 include(FetchContent)
 
 FetchContent_Declare(
-    glfw
-    GIT_REPOSITORY https://github.com/glfw/glfw.git
-    GIT_TAG latest
+        glfw
+        GIT_REPOSITORY https://github.com/glfw/glfw.git
+        GIT_TAG latest
 )
 FetchContent_MakeAvailable(glfw)
 
 FetchContent_Declare(
-    glm
-    GIT_REPOSITORY https://github.com/g-truc/glm.git
-    GIT_TAG master
+        glm
+        GIT_REPOSITORY https://github.com/g-truc/glm.git
+        GIT_TAG master
 )
 FetchContent_MakeAvailable(glm)
 
 find_package(Vulkan REQUIRED)
 
 add_executable(client_app
-    src/Main.cpp
-    src/VulkanApp.cpp
-    src/VulkanApp.h
-    src/input/Input.cpp
-    src/input/Input.h
+        src/Main.cpp
+        src/VulkanApp.cpp
+        src/VulkanApp.h
+        src/input/Input.cpp
+        src/input/Input.h
+        src/renderer/Model.cpp
+        src/renderer/Model.h
+        src/renderer/utils/happly.h
+        src/renderer/Renderer.cpp
+        src/renderer/Renderer.h
 )
 
 target_link_libraries(client_app PRIVATE common glfw Vulkan::Vulkan glm)
