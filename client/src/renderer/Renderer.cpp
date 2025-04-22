@@ -71,7 +71,7 @@ namespace TT::Renderer {
         renderPassInfo.renderArea.extent = swapChainExtent;
 
         std::array<VkClearValue, 2> clearValues{};
-        clearValues[0].color = {{0.1f, 0.1f, 0.1f, 1.0f}};
+        clearValues[0].color = {{0.8f, 0.8f, 1.0f, 1.0f}};
         clearValues[1].depthStencil = {1.0f, 0};
         renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
         renderPassInfo.pClearValues = clearValues.data();
@@ -80,7 +80,7 @@ namespace TT::Renderer {
         vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
 
-    void renderModel(Model& model, glm::vec3 position, glm::vec3 rotation ) {
+    void renderModel(Model& model, glm::vec3 position, glm::vec3 rotation) {
         glm::mat4 translation = glm::translate(glm::mat4(1.0f), position);
         glm::mat4 rotationMat = glm::eulerAngleXYZ(glm::radians(rotation.x), glm::radians(rotation.y),
                                                    glm::radians(rotation.z));

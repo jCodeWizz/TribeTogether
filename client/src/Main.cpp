@@ -4,7 +4,37 @@
 
 #include "renderer/Renderer.h"
 #include "renderer/Model.h"
+#include "input/Input.h"
 #include "glm/glm.hpp"
+
+void update() {
+
+    if (TT::Input::isKeyDown(GLFW_KEY_W)) {
+        TT::Renderer::m_CameraPosition.z -= 0.1f;
+    }
+    if (TT::Input::isKeyDown(GLFW_KEY_S)) {
+        TT::Renderer::m_CameraPosition.z += 0.1f;
+    }
+    if (TT::Input::isKeyDown(GLFW_KEY_A)) {
+        TT::Renderer::m_CameraPosition.x -= 0.1f;
+    }
+    if (TT::Input::isKeyDown(GLFW_KEY_D)) {
+        TT::Renderer::m_CameraPosition.x += 0.1f;
+    }
+
+    if (TT::Input::isKeyDown(GLFW_KEY_LEFT)) {
+        TT::Renderer::m_CameraRotation.y += 2.0f;
+    }
+    if (TT::Input::isKeyDown(GLFW_KEY_RIGHT)) {
+        TT::Renderer::m_CameraRotation.y -= 2.0f;
+    }
+    if (TT::Input::isKeyDown(GLFW_KEY_UP)) {
+        TT::Renderer::m_CameraRotation.x -= 2.0f;
+    }
+    if (TT::Input::isKeyDown(GLFW_KEY_DOWN)) {
+        TT::Renderer::m_CameraRotation.x += 2.0f;
+    }
+}
 
 int main() {
 
@@ -73,8 +103,8 @@ int main() {
 
         while (!glfwWindowShouldClose(TT::Renderer::window)) {
             glfwPollEvents();
-            //update();
-            //render();
+
+            update();
 
             TT::Renderer::start();
             TT::Renderer::renderModel(m, glm::vec3{ 0.0f}, glm::vec3{0.0f});
