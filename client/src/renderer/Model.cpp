@@ -16,6 +16,16 @@ namespace TT {
         CreateBuffers(device, physicalDevice);
     }
 
+    Model::Model(VkDevice &device, VkPhysicalDevice physicalDevice, std::vector<Vertex> vertices, std::vector<uint32_t> indices) {
+        m_Vertices = vertices;
+        m_Indices = indices;
+        m_IndexCount = indices.size();
+
+
+        CreateBuffers(device, physicalDevice);
+    }
+
+
     Model::~Model() {
         Destroy();
     }

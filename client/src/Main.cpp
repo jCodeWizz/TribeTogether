@@ -11,7 +11,65 @@ int main() {
     try {
         TT::Renderer::init();
 
-        TT::Model m = *new TT::Model(TT::Renderer::device, TT::Renderer::physicalDevice, "assets/models/static/untitled.ply");
+        const std::vector<TT::Vertex> vertices = {
+            // Front face (red)
+            {{-0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, { 0.0f,  0.0f,  1.0f}},
+            {{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, { 0.0f,  0.0f,  1.0f}},
+            {{ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, { 0.0f,  0.0f,  1.0f}},
+            {{-0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, { 0.0f,  0.0f,  1.0f}},
+
+            // Back face (green)
+            {{ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, { 0.0f,  0.0f, -1.0f}},
+            {{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, { 0.0f,  0.0f, -1.0f}},
+            {{-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, { 0.0f,  0.0f, -1.0f}},
+            {{ 0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, { 0.0f,  0.0f, -1.0f}},
+
+            // Left face (blue)
+            {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {-1.0f,  0.0f,  0.0f}},
+            {{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {-1.0f,  0.0f,  0.0f}},
+            {{-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {-1.0f,  0.0f,  0.0f}},
+            {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {-1.0f,  0.0f,  0.0f}},
+
+            // Right face (yellow)
+            {{ 0.5f, -0.5f,  0.5f}, {1.0f, 1.0f, 0.0f}, { 1.0f,  0.0f,  0.0f}},
+            {{ 0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 0.0f}, { 1.0f,  0.0f,  0.0f}},
+            {{ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 0.0f}, { 1.0f,  0.0f,  0.0f}},
+            {{ 0.5f,  0.5f,  0.5f}, {1.0f, 1.0f, 0.0f}, { 1.0f,  0.0f,  0.0f}},
+
+            // Top face (cyan)
+            {{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 1.0f}, { 0.0f,  1.0f,  0.0f}},
+            {{ 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 1.0f}, { 0.0f,  1.0f,  0.0f}},
+            {{ 0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 1.0f}, { 0.0f,  1.0f,  0.0f}},
+            {{-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 1.0f}, { 0.0f,  1.0f,  0.0f}},
+
+            // Bottom face (magenta)
+            {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 1.0f}, { 0.0f, -1.0f,  0.0f}},
+            {{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 1.0f}, { 0.0f, -1.0f,  0.0f}},
+            {{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 1.0f}, { 0.0f, -1.0f,  0.0f}},
+            {{-0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 1.0f}, { 0.0f, -1.0f,  0.0f}},
+        };
+
+        const std::vector<uint32_t> indices = {
+            // Front face
+            0, 1, 2, 2, 3, 0,
+
+            // Back face
+            4, 5, 6, 6, 7, 4,
+
+            // Left face
+            8, 9, 10, 10, 11, 8,
+
+            // Right face
+            12, 13, 14, 14, 15, 12,
+
+            // Top face
+            16, 17, 18, 18, 19, 16,
+
+            // Bottom face
+            20, 21, 22, 22, 23, 20
+        };
+
+        TT::Model m = *new TT::Model(TT::Renderer::device, TT::Renderer::physicalDevice, vertices, indices);
 
         while (!glfwWindowShouldClose(TT::Renderer::window)) {
             glfwPollEvents();

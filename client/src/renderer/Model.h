@@ -55,6 +55,7 @@ namespace TT {
     public:
         Model();
         Model(VkDevice &device, VkPhysicalDevice physicalDevice, const std::string& path);
+        Model(VkDevice &device, VkPhysicalDevice physicalDevice, std::vector<Vertex> vertices, std::vector<uint32_t> indices);
         ~Model();
 
         void CreateBuffers(VkDevice &device, VkPhysicalDevice physicalDevice);
