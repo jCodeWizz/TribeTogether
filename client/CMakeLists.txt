@@ -30,6 +30,8 @@ add_executable(client_app
         src/entities/Entity.h
         src/entities/Component.cpp
         src/entities/Component.h
+        src/entities/components/EntityComponents.cpp
+        src/entities/components/RenderingComponents.cpp
 )
 
 target_link_libraries(client_app PRIVATE common glfw Vulkan::Vulkan glm)

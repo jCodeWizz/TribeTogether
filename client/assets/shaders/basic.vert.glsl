@@ -15,5 +15,5 @@ layout(push_constant) uniform PushConstants {
 void main() {
     gl_Position = u_PushConstants.ViewProjection * u_PushConstants.Transform * vec4(inPosition, 1.0);
     outColour = inColour;
-    outNormal = inNormal;
+    outNormal = normalize(transpose(inverse(mat3(u_PushConstants.Transform))) * inNormal);
 }
