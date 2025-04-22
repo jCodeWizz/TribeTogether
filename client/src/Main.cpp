@@ -1,6 +1,8 @@
+#include <chrono>
 #include <vulkan/vulkan.h>
 #include <iostream>
 #include <cstdlib>
+#include <thread>
 
 #include "renderer/Renderer.h"
 #include "renderer/Model.h"
@@ -10,36 +12,40 @@
 #include "entities/components/EntityComponents.cpp"
 #include "entities/components/RenderingComponents.cpp"
 
-void update() {
-
+uint64_t timeSinceEpochMillisec() {
+    using namespace std::chrono;
+    return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+}
+void update(float dt) {
     if (TT::Input::isKeyDown(GLFW_KEY_W)) {
-        TT::Renderer::m_CameraPosition.z -= 0.01f;
+        TT::Renderer::m_CameraPosition.z -= 10.0f * dt;
     }
     if (TT::Input::isKeyDown(GLFW_KEY_S)) {
-        TT::Renderer::m_CameraPosition.z += 0.01f;
+        TT::Renderer::m_CameraPosition.z += 10.0f * dt;
     }
     if (TT::Input::isKeyDown(GLFW_KEY_A)) {
-        TT::Renderer::m_CameraPosition.x -= 0.01f;
+        TT::Renderer::m_CameraPosition.x -= 10.0f * dt;
     }
     if (TT::Input::isKeyDown(GLFW_KEY_D)) {
-        TT::Renderer::m_CameraPosition.x += 0.01f;
+        TT::Renderer::m_CameraPosition.x += 10.0f * dt;
     }
 
     if (TT::Input::isKeyDown(GLFW_KEY_LEFT)) {
-        TT::Renderer::m_CameraRotation.y += 0.1f;
+        TT::Renderer::m_CameraRotation.y += 100.0f * dt;
     }
     if (TT::Input::isKeyDown(GLFW_KEY_RIGHT)) {
-        TT::Renderer::m_CameraRotation.y -= 0.1f;
+        TT::Renderer::m_CameraRotation.y -= 100.0f * dt;
     }
     if (TT::Input::isKeyDown(GLFW_KEY_UP)) {
-        TT::Renderer::m_CameraRotation.x -= 0.1f;
+        TT::Renderer::m_CameraRotation.x -= 100.0f * dt;
     }
     if (TT::Input::isKeyDown(GLFW_KEY_DOWN)) {
-        TT::Renderer::m_CameraRotation.x += 0.1f;
+        TT::Renderer::m_CameraRotation.x += 100.0f * dt;
     }
 }
 
 int main() {
+    auto lastFrame = std::chrono::high_resolution_clock::now();
 
     try {
         TT::Renderer::init();
@@ -51,10 +57,18 @@ int main() {
         while (!glfwWindowShouldClose(TT::Renderer::window)) {
             glfwPollEvents();
 
-            update();
+            auto now = std::chrono::high_resolution_clock::now();
+            float dt = std::chrono::duration<float>(now - lastFrame).count();
+            lastFrame = now;
+
+            update(dt);
 
             TT::Renderer::start();
-            TT::Renderer::renderModel(entity.getComponent<TT::ModelComponent>()->model->vertexBuffer, entity.getComponent<TT::ModelComponent>()->model->indexBuffer, entity.getComponent<TT::ModelComponent>()->model->indexBufferSize, entity.getComponent<TT::Transform>()->position, entity.getComponent<TT::Transform>()->rotation);
+            TT::Renderer::renderModel(entity.getComponent<TT::ModelComponent>()->model->vertexBuffer,
+                                      entity.getComponent<TT::ModelComponent>()->model->indexBuffer,
+                                      entity.getComponent<TT::ModelComponent>()->model->indexBufferSize,
+                                      entity.getComponent<TT::Transform>()->position,
+                                      entity.getComponent<TT::Transform>()->rotation);
             TT::Renderer::flush();
         }
 
