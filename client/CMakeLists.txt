@@ -26,6 +26,10 @@ add_executable(client_app
         src/renderer/utils/happly.h
         src/renderer/Renderer.cpp
         src/renderer/Renderer.h
+        src/entities/Entity.cpp
+        src/entities/Entity.h
+        src/entities/Component.cpp
+        src/entities/Component.h
 )
 
 target_link_libraries(client_app PRIVATE common glfw Vulkan::Vulkan glm)

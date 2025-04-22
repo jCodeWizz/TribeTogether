@@ -99,7 +99,7 @@ int main() {
         };
 
         TT::Renderer::Model m = *new TT::Renderer::Model(vertices, indices);
-        //TT::Renderer::Model m = *new TT::Renderer::Model("assets/models/static/untitled.ply");
+        TT::Renderer::Model m2 = *new TT::Renderer::Model("assets/models/static/untitled.ply");
 
         while (!glfwWindowShouldClose(TT::Renderer::window)) {
             glfwPollEvents();
@@ -108,6 +108,7 @@ int main() {
 
             TT::Renderer::start();
             TT::Renderer::renderModel(m.vertexBuffer, m.indexBuffer, m.indexBufferSize, glm::vec3{ 0.0f}, glm::vec3{0.0f});
+            TT::Renderer::renderModel(m2.vertexBuffer, m2.indexBuffer, m2.indexBufferSize, glm::vec3{ 2.0f}, glm::vec3{0.0f});
             TT::Renderer::flush();
         }
 
