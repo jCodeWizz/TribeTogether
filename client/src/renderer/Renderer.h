@@ -1,6 +1,5 @@
 #pragma once
 #define GLM_ENABLE_EXPERIMENTAL
-#include "Model.h"
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -33,6 +32,42 @@ namespace TT::Renderer {
         }
     };
 
+    struct Vertex {
+        glm::vec3 position;
+        glm::vec3 colour;
+        glm::vec3 normal;
+
+        static VkVertexInputBindingDescription getBindingDescription() {
+            VkVertexInputBindingDescription bindingDescription{};
+            bindingDescription.binding = 0;
+            bindingDescription.stride = sizeof(Vertex);
+            bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+            return bindingDescription;
+        }
+
+        static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
+            std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
+
+            attributeDescriptions[0].binding = 0;
+            attributeDescriptions[0].location = 0;
+            attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescriptions[0].offset = offsetof(Vertex, position);
+
+            attributeDescriptions[1].binding = 0;
+            attributeDescriptions[1].location = 1;
+            attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescriptions[1].offset = offsetof(Vertex, colour);
+
+            attributeDescriptions[2].binding = 0;
+            attributeDescriptions[2].location = 2;
+            attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescriptions[2].offset = offsetof(Vertex, normal);
+
+            return attributeDescriptions;
+        }
+    };
+
     inline glm::vec3 m_CameraPosition{0, 0, 2};
     inline glm::vec3 m_CameraRotation{0, 0, 0};
 
@@ -52,7 +87,7 @@ namespace TT::Renderer {
 
     void init();
     void start();
-    void renderModel(Model& model, glm::vec3 position, glm::vec3 rotation);
+    void renderModel(VkBuffer vertexBuffer, VkBuffer indexBuffer, uint32_t indexBufferSize, glm::vec3 position, glm::vec3 rotation);
     void flush();
     void cleanup();
 
@@ -117,8 +152,8 @@ namespace TT::Renderer {
     void createSyncObjects();
     void recreateSwapChain();
     void cleanupSwapChain();
-    void createVertexBuffer();
-    void createIndexBuffer();
+    VkBuffer createVertexBuffer(std::vector<Vertex> vertices);
+    VkBuffer createIndexBuffer(std::vector<uint32_t> indices);
     void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
                       VkBuffer& buffer, VkDeviceMemory& bufferMemory);
     void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);

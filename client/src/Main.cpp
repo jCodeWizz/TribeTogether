@@ -41,7 +41,7 @@ int main() {
     try {
         TT::Renderer::init();
 
-        const std::vector<TT::Vertex> vertices = {
+        const std::vector<TT::Renderer::Vertex> vertices = {
             // Front face (red)
             {{-0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, { 0.0f,  0.0f,  1.0f}},
             {{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, { 0.0f,  0.0f,  1.0f}},
@@ -99,7 +99,7 @@ int main() {
             20, 21, 22, 22, 23, 20
         };
 
-        TT::Model m = *new TT::Model(TT::Renderer::device, TT::Renderer::physicalDevice, vertices, indices);
+        TT::Renderer::Model m = *new TT::Renderer::Model(vertices, indices);
 
         while (!glfwWindowShouldClose(TT::Renderer::window)) {
             glfwPollEvents();
@@ -107,7 +107,7 @@ int main() {
             update();
 
             TT::Renderer::start();
-            TT::Renderer::renderModel(m, glm::vec3{ 0.0f}, glm::vec3{0.0f});
+            TT::Renderer::renderModel(m.vertexBuffer, m.indexBuffer, m.indexBufferSize, glm::vec3{ 0.0f}, glm::vec3{0.0f});
             TT::Renderer::flush();
         }
 
