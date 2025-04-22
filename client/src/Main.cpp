@@ -82,7 +82,6 @@ int main() {
         const std::vector<uint32_t> indices = {
             // Front face
             0, 1, 2, 2, 3, 0,
-
             // Back face
             4, 5, 6, 6, 7, 4,
 
@@ -100,6 +99,7 @@ int main() {
         };
 
         TT::Renderer::Model m = *new TT::Renderer::Model(vertices, indices);
+        //TT::Renderer::Model m = *new TT::Renderer::Model("assets/models/static/untitled.ply");
 
         while (!glfwWindowShouldClose(TT::Renderer::window)) {
             glfwPollEvents();

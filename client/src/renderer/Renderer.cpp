@@ -104,7 +104,7 @@ namespace TT::Renderer {
                            &m_PushConstants);
 
         vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(commandBuffers[currentFrame], indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+        vkCmdBindIndexBuffer(commandBuffers[currentFrame], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
         vkCmdDrawIndexed(commandBuffers[currentFrame], static_cast<uint32_t>(indexBufferSize), 1, 0, 0, 0);
     }
