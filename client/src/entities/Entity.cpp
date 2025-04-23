@@ -12,7 +12,7 @@ namespace TT {
         }
     }
 
-    void Entity::update(float dt) {
+    void Entity::update(const float dt) {
         for (const auto& pair : m_Components) {
             pair.second->update(dt);
         }

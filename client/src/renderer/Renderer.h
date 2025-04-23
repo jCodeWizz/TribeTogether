@@ -68,8 +68,8 @@ namespace TT::Renderer {
         }
     };
 
-    inline glm::vec3 m_CameraPosition{0, 0, 2};
-    inline glm::vec3 m_CameraRotation{0, 0, 0};
+    inline glm::vec3 cameraPosition{0, 0, 2};
+    inline glm::vec3 cameraRotation{0, 0, 0};
 
     inline const std::vector<const char*> deviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
@@ -87,7 +87,7 @@ namespace TT::Renderer {
 
     void init();
     void start();
-    void renderModel(VkBuffer vertexBuffer, VkBuffer indexBuffer, uint32_t indexBufferSize, glm::vec3 position, glm::vec3 rotation);
+    void renderModel(VkBuffer vertexBuffer, VkBuffer indexBuffer, uint32_t indexBufferSize, glm::vec3 position, glm::vec3 rotation, float scale);
     void flush();
     void cleanup();
 

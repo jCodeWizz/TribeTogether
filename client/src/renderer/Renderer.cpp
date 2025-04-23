@@ -80,15 +80,15 @@ namespace TT::Renderer {
         vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
 
-    void renderModel(VkBuffer vertexBuffer, VkBuffer indexBuffer, uint32_t indexBufferSize, glm::vec3 position, glm::vec3 rotation) {
+    void renderModel(VkBuffer vertexBuffer, VkBuffer indexBuffer, uint32_t indexBufferSize, glm::vec3 position, glm::vec3 rotation, float scale) {
         glm::mat4 translation = glm::translate(glm::mat4(1.0f), position);
         glm::mat4 rotationMat = glm::eulerAngleXYZ(glm::radians(rotation.x), glm::radians(rotation.y),
                                                    glm::radians(rotation.z));
-        glm::mat4 scaling = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+        glm::mat4 scaling = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
 
-        glm::mat4 cameraTransform = glm::translate(glm::mat4(1.0f), m_CameraPosition)
-            * glm::eulerAngleXYZ(glm::radians(m_CameraRotation.x), glm::radians(m_CameraRotation.y),
-                                 glm::radians(m_CameraRotation.z));
+        glm::mat4 cameraTransform = glm::translate(glm::mat4(1.0f), cameraPosition)
+            * glm::eulerAngleXYZ(glm::radians(cameraRotation.x), glm::radians(cameraRotation.y),
+                                 glm::radians(cameraRotation.z));
 
         m_PushConstants.ViewProjection = glm::perspectiveFov(glm::radians(45.0f), static_cast<float>(WIDTH),
                                                              static_cast<float>(HEIGHT), 0.1f, 1000.0f)
