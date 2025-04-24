@@ -86,9 +86,9 @@ namespace TT::Renderer {
                                                    glm::radians(rotation.z));
         glm::mat4 scaling = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
 
-        glm::mat4 cameraTransform = glm::translate(glm::mat4(1.0f), cameraPosition)
-            * glm::eulerAngleXYZ(glm::radians(cameraRotation.x), glm::radians(cameraRotation.y),
-                                 glm::radians(cameraRotation.z));
+            glm::mat4 cameraTransform = glm::translate(glm::mat4(1.0f), cameraPosition)
+                * glm::eulerAngleXYZ(glm::radians(cameraRotation.x), glm::radians(cameraRotation.y),
+                                     glm::radians(cameraRotation.z));
 
         m_PushConstants.ViewProjection = glm::perspectiveFov(glm::radians(45.0f), static_cast<float>(WIDTH),
                                                              static_cast<float>(HEIGHT), 0.1f, 1000.0f)
