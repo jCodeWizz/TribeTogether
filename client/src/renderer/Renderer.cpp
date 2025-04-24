@@ -616,8 +616,6 @@ namespace TT::Renderer {
     }
 
     void recreateSwapChain() {
-        std::cout << "Resized" << "\n";
-
         int width = 0, height = 0;
         glfwGetFramebufferSize(window, &width, &height);
         while ((width == 0 || height == 0) && !glfwWindowShouldClose(window)) {

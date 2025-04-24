@@ -11,7 +11,7 @@
 
 void update(float dt) {
 
-    if (TT::Input::isKeyDown(GLFW_KEY_F11)) {
+    if (TT::Input::isKeyPressed(GLFW_KEY_F11)) {
         TT::Renderer::toggleFullscreen();
     }
 }
@@ -40,6 +40,8 @@ int main() {
                 world.render();
                 TT::Renderer::flush();
             }
+
+            TT::Input::update(dt);
         }
 
         vkDeviceWaitIdle(TT::Renderer::device);
