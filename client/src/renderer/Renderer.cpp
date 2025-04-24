@@ -37,7 +37,7 @@ namespace TT::Renderer {
         createSyncObjects();
     }
 
-    void start() {
+    bool start() {
         vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
         VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame],
@@ -46,7 +46,7 @@ namespace TT::Renderer {
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || frameBufferResized) {
             frameBufferResized = false;
             recreateSwapChain();
-            return;
+            return false;
         }
         else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
             throw std::runtime_error("failed to acquire swap chain image!");
@@ -78,6 +78,8 @@ namespace TT::Renderer {
 
         vkCmdBeginRenderPass(commandBuffers[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+
+        return true;
     }
 
     void renderModel(VkBuffer vertexBuffer, VkBuffer indexBuffer, uint32_t indexBufferSize, glm::vec3 position, glm::vec3 rotation, float scale) {
@@ -635,6 +637,8 @@ namespace TT::Renderer {
         createSwapChain();
         createImageViews();
         createDepthResources();
+        createRenderPass();
+        createGraphicsPipeline();
         createFrameBuffers();
     }
 
@@ -643,13 +647,17 @@ namespace TT::Renderer {
         vkDestroyImage(device, depthImage, nullptr);
         vkFreeMemory(device, depthImageMemory, nullptr);
 
-        for (size_t i = 0; i < swapChainFrameBuffers.size(); i++) {
-            vkDestroyFramebuffer(device, swapChainFrameBuffers[i], nullptr);
+        for (auto framebuffer : swapChainFrameBuffers) {
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
 
-        for (size_t i = 0; i < swapChainImageViews.size(); i++) {
-            vkDestroyImageView(device, swapChainImageViews[i], nullptr);
+        for (auto imageView : swapChainImageViews) {
+            vkDestroyImageView(device, imageView, nullptr);
         }
+
+        vkDestroyPipeline(device, graphicsPipeline, nullptr);     // <- ADD THIS
+        vkDestroyPipelineLayout(device, pipelineLayout, nullptr); // <- ADD THIS
+        vkDestroyRenderPass(device, renderPass, nullptr);         // <- ADD THIS
 
         vkDestroySwapchainKHR(device, swapChain, nullptr);
     }

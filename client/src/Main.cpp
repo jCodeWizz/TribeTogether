@@ -27,9 +27,11 @@ int main() {
 
             world.update(dt);
 
-            TT::Renderer::start();
-            world.render();
-            TT::Renderer::flush();
+            bool c = TT::Renderer::start();
+            if (c) {
+                world.render();
+                TT::Renderer::flush();
+            }
         }
 
         vkDeviceWaitIdle(TT::Renderer::device);

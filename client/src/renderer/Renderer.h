@@ -86,7 +86,7 @@ namespace TT::Renderer {
     };
 
     void init();
-    void start();
+    bool start();
     void renderModel(VkBuffer vertexBuffer, VkBuffer indexBuffer, uint32_t indexBufferSize, glm::vec3 position, glm::vec3 rotation, float scale);
     void flush();
     void cleanup();
