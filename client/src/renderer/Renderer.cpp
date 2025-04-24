@@ -16,7 +16,6 @@ namespace TT::Renderer {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
         window = glfwCreateWindow(WIDTH, HEIGHT, "Tribe Together // v0.0.1pa", nullptr, nullptr);
-        //TODO: delete glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
         glfwSetKeyCallback(window, Input::onKeyPress);
     }
@@ -172,10 +171,6 @@ namespace TT::Renderer {
             vkDestroyFence(device, inFlightFences[i], nullptr);
         }
         vkDestroyCommandPool(device, commandPool, nullptr);
-
-        vkDestroyPipeline(device, graphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-        vkDestroyRenderPass(device, renderPass, nullptr);
 
         vkDestroyDevice(device, nullptr);
         vkDestroySurfaceKHR(instance, surface, nullptr);
@@ -625,7 +620,7 @@ namespace TT::Renderer {
 
         int width = 0, height = 0;
         glfwGetFramebufferSize(window, &width, &height);
-        while (width == 0 || height == 0) {
+        while ((width == 0 || height == 0) && !glfwWindowShouldClose(window)) {
             glfwGetFramebufferSize(window, &width, &height);
             glfwWaitEvents();
         }
@@ -1175,5 +1170,23 @@ namespace TT::Renderer {
 
     bool hasStencilComponent(VkFormat format) {
         return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
+    }
+
+    void toggleFullscreen() {
+        isFullscreen = !isFullscreen;
+
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+        if (isFullscreen) {
+            glfwGetWindowPos(window, &windowPosX, &windowPosY);
+            glfwGetWindowSize(window, &windowWidth, &windowHeight);
+
+            glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+        } else {
+            glfwSetWindowMonitor(window, nullptr, windowPosX, windowPosY, windowWidth, windowHeight, 0);
+        }
+
+        frameBufferResized = true;
     }
 }

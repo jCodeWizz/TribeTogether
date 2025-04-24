@@ -125,6 +125,9 @@ namespace TT::Renderer {
     inline VkImage depthImage;
     inline VkDeviceMemory depthImageMemory;
     inline VkImageView depthImageView;
+    inline bool isFullscreen = false;
+    inline int windowPosX = 100, windowPosY = 100;
+    inline int windowWidth = WIDTH, windowHeight = HEIGHT;
 
     void initWindow();
     void initVulkan();
@@ -169,4 +172,5 @@ namespace TT::Renderer {
     void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
     VkCommandBuffer beginSingleTimeCommands();
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+    void toggleFullscreen();
 }

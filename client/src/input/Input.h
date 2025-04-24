@@ -5,7 +5,7 @@
 
 namespace TT::Input {
 
-    inline std::array<bool, 256> keys;
+    inline std::array<bool, 326> keys;
 
     void onKeyPress(GLFWwindow* window, int key, int scancode, int action, int mods);
     bool isKeyDown(const int &key);

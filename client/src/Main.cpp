@@ -9,6 +9,13 @@
 #include "glm/glm.hpp"
 #include "world/World.h"
 
+void update(float dt) {
+
+    if (TT::Input::isKeyDown(GLFW_KEY_F11)) {
+        TT::Renderer::toggleFullscreen();
+    }
+}
+
 int main() {
     auto lastFrame = std::chrono::high_resolution_clock::now();
 
@@ -25,6 +32,7 @@ int main() {
             float dt = std::chrono::duration<float>(now - lastFrame).count();
             lastFrame = now;
 
+            update(dt);
             world.update(dt);
 
             bool c = TT::Renderer::start();
