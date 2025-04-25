@@ -2,4 +2,4 @@ add_executable(server_app
     src/Main.cpp
 )
 
-target_link_libraries(server_app PRIVATE common)
+target_link_libraries(server_app PRIVATE common ws2_32)

@@ -1,8 +1,16 @@
-//
-// Created by tomhe on 20/04/2025.
-//
+#pragma once
 
-#ifndef PACKET_H
-#define PACKET_H
+#include <string>
+#include <vector>
+#include <cstdint>
 
-#endif //PACKET_H
+class Packet {
+public:
+    int32_t headerType;
+    std::vector<uint8_t> content;
+    std::string senderIp;
+    uint16_t senderPort;
+
+    Packet(int32_t header, const std::vector<uint8_t>& data,
+           const std::string& ip, uint16_t port);
+};
