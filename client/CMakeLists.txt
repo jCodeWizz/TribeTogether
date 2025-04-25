@@ -35,9 +35,11 @@ add_executable(client_app
         src/entities/components/ControlComponents.cpp
         src/world/World.cpp
         src/world/World.h
+        src/network/Network.cpp
+        src/network/Network.h
 )
 
-target_link_libraries(client_app PRIVATE common glfw Vulkan::Vulkan glm)
+target_link_libraries(client_app PRIVATE common ws2_32 glfw Vulkan::Vulkan glm)
 target_include_directories(client_app PRIVATE ${Vulkan_INCLUDE_DIRS})
 
 add_custom_command(TARGET client_app POST_BUILD

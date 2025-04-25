@@ -6,7 +6,7 @@ namespace TT {
         : headerType(header), content(data), senderIp(ip), senderPort(port) {
     }
 
-    void Packet::print() {
+    void Packet::print() const {
         std::cout << "Packet(" << headerType << "):" << std::endl;
         std::cout << "  From: " << senderIp << ":" << senderPort << std::endl;
         for (auto c : content) std::cout << c;

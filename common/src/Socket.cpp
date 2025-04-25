@@ -37,7 +37,7 @@ namespace TT {
         }
     }
 
-    void Socket::setOnPacketReceived(std::function<void(const Packet&)> callback) {
+    void Socket::setOnPacketReceived(std::function<void(const Socket&, const Packet&)> callback) {
         onPacketReceived = std::move(callback);
     }
 
@@ -50,7 +50,7 @@ namespace TT {
             int recvLen = recvfrom(sock, buffer, sizeof(buffer), 0,
                                    (sockaddr*)&from, &fromLen);
             if (recvLen == SOCKET_ERROR) {
-                std::cerr << "recvfrom failed.\n";
+                std::cerr << "recvfrom failed: " << WSAGetLastError() << "\n";
                 continue;
             }
 
@@ -68,8 +68,9 @@ namespace TT {
             Packet packet(headerType, content, ipStr, ntohs(from.sin_port));
 
             if (onPacketReceived) {
-                onPacketReceived(packet);
-            } else {
+                onPacketReceived(*this, packet);
+            }
+            else {
                 packet.print();
             }
         }

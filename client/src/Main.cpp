@@ -7,12 +7,18 @@
 #include "renderer/Renderer.h"
 #include "input/Input.h"
 #include "glm/glm.hpp"
+#include "network/Network.h"
 #include "world/World.h"
 
 void update(float dt) {
 
     if (TT::Input::isKeyPressed(GLFW_KEY_F11)) {
         TT::Renderer::toggleFullscreen();
+    }
+
+    if (TT::Input::isKeyPressed(GLFW_KEY_F12)) {
+        std::string s = "testing server?";
+        TT::Network::send(1, std::vector<uint8_t>(s.begin(), s.end()), "127.0.0.1", 6767);
     }
 }
 
@@ -21,6 +27,7 @@ int main() {
 
     try {
         TT::Renderer::init();
+        TT::Network::init();
 
         auto world = TT::World();
         world.init();

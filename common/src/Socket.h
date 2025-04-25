@@ -16,12 +16,12 @@ namespace TT {
 
         void start();
         void send(int32_t headerType, const std::vector<uint8_t>& data, const std::string& ip, uint16_t port);
-        void setOnPacketReceived(std::function<void(const Packet&)> callback);
+        void setOnPacketReceived(std::function<void(const Socket&, const Packet&)> callback);
 
     private:
         SOCKET sock;
         uint16_t localPort;
-        std::function<void(const Packet&)> onPacketReceived;
+        std::function<void(const Socket&, const Packet&)> onPacketReceived;
 
         void initWinsock();
     };
