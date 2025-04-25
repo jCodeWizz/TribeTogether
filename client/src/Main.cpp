@@ -20,6 +20,12 @@ void update(float dt) {
         std::string s = "testing server?";
         TT::Network::send(1, std::vector<uint8_t>(s.begin(), s.end()), "127.0.0.1", 6767);
     }
+
+    if (TT::Input::isKeyPressed(GLFW_KEY_ESCAPE)) {
+        if (TT::Input::isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+            exit(0);
+        }
+    }
 }
 
 int main() {
