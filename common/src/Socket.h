@@ -6,19 +6,23 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include "Packet.h"
+#include <functional>
 
-class Socket {
-public:
-    explicit Socket(uint16_t port);
-    ~Socket();
+namespace TT {
+    class Socket {
+    public:
+        explicit Socket(uint16_t port);
+        ~Socket();
 
-    void start();
-    void send(int32_t headerType, const std::vector<uint8_t>& data,
-              const std::string& ip, uint16_t port);
+        void start();
+        void send(int32_t headerType, const std::vector<uint8_t>& data, const std::string& ip, uint16_t port);
+        void setOnPacketReceived(std::function<void(const Packet&)> callback);
 
-private:
-    SOCKET sock;
-    uint16_t localPort;
+    private:
+        SOCKET sock;
+        uint16_t localPort;
+        std::function<void(const Packet&)> onPacketReceived;
 
-    void initWinsock();
-};
+        void initWinsock();
+    };
+}
