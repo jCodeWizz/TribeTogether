@@ -9,6 +9,7 @@
 #include "glm/glm.hpp"
 #include "network/Network.h"
 #include "world/World.h"
+#include "Protocol.h"
 
 void update(float dt) {
 
@@ -18,7 +19,7 @@ void update(float dt) {
 
     if (TT::Input::isKeyPressed(GLFW_KEY_F12)) {
         std::string s = "testing server?";
-        TT::Network::send(1, std::vector<uint8_t>(s.begin(), s.end()), "127.0.0.1", 6767);
+        TT::Network::send(INIT_CONNECT, std::vector<uint8_t>(s.begin(), s.end()), "127.0.0.1", 9696);
     }
 
     if (TT::Input::isKeyPressed(GLFW_KEY_ESCAPE)) {
@@ -48,8 +49,7 @@ int main() {
             update(dt);
             world.update(dt);
 
-            bool c = TT::Renderer::start();
-            if (c) {
+            if (TT::Renderer::start()) {
                 world.render();
                 TT::Renderer::flush();
             }

@@ -3,9 +3,9 @@
 #include <vector>
 #include "glm/glm.hpp"
 #include "../entities/Entity.h"
-#include "../entities/components/EntityComponents.cpp"
-#include "../entities/components/RenderingComponents.cpp"
-#include "../entities/components/ControlComponents.cpp"
+#include "../entities/components/EntityComponents.h"
+#include "../entities/components/RenderingComponents.h"
+#include "../entities/components/ControlComponents.h"
 #include "../renderer/Renderer.h"
 
 namespace TT {

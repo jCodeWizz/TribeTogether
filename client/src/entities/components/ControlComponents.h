@@ -1,14 +1,17 @@
+#pragma once
+
 #include "../Component.h"
 #include "glm/glm.hpp"
 #include "../../renderer/Renderer.h"
 
 namespace TT {
+
     class CameraController : public Component {
     public:
         void init() override {
         }
 
-        void update(float dt) {
+        void update(float dt) override {
             glm::mat4 cameraTransform = glm::translate(glm::mat4(1.0f), Renderer::cameraPosition)
                 * glm::eulerAngleXYZ(glm::radians(Renderer::cameraRotation.x), glm::radians(Renderer::cameraRotation.y),
                                      glm::radians(Renderer::cameraRotation.z));

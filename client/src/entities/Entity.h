@@ -26,7 +26,7 @@ namespace TT {
         template <typename T>
         T* getComponent() {
             auto it = m_Components.find(typeid(T));
-            return it != m_Components.end() ? dynamic_cast<T*>(it->second.get()) : nullptr;
+            return it != m_Components.end() ? static_cast<T*>(it->second.get()) : nullptr;
         }
 
         template <typename T>

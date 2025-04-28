@@ -28,11 +28,10 @@ add_executable(client_app
         src/renderer/Renderer.h
         src/entities/Entity.cpp
         src/entities/Entity.h
-        src/entities/Component.cpp
         src/entities/Component.h
-        src/entities/components/EntityComponents.cpp
-        src/entities/components/RenderingComponents.cpp
-        src/entities/components/ControlComponents.cpp
+        src/entities/components/EntityComponents.h
+        src/entities/components/RenderingComponents.h
+        src/entities/components/ControlComponents.h
         src/world/World.cpp
         src/world/World.h
         src/network/Network.cpp
