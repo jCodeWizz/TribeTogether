@@ -1,6 +1,6 @@
 #include "Network.h"
 #include <thread>
-#include <iostream>
+#include "Protocol.h"
 
 namespace TT::Network {
     static Socket socket(6767);
@@ -12,6 +12,8 @@ namespace TT::Network {
             socket.start();
         });
         listener.detach();
+
+        send(NW_INIT, std::vector<uint8_t>(), "127.0.0.1", 9696);
     }
 
     void send(int32_t headerType, const std::vector<uint8_t>& data, const std::string& ip, uint16_t port) {

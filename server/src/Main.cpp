@@ -2,11 +2,15 @@
 
 #include "Socket.h"
 #include <thread>
+#include "Protocol.h"
 
 
+void received(const TT::Socket& s, const TT::Packet& p) {
 
-void received(TT::Socket s, TT::Packet p) {
-    s.send(p.headerType, p.content, p.senderIp, p.senderPort);
+    if (p.headerType == NW_INIT) {
+        std::cout << "New client connected!" << "\n";
+        s.send(NW_CONFIRM_INIT, std::vector<uint8_t>(), p.senderIp, p.senderPort);
+    }
 }
 
 int main() {

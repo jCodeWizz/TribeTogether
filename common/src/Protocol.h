@@ -1,5 +1,6 @@
 #pragma once
 
-#define KEEP_ALIVE 0
-#define INIT_CONNECT 1
-#define POSITION 2
+#define NW_KEEP_ALIVE 0
+#define NW_INIT 1
+#define NW_CONFIRM_INIT 2
+#define NW_POSITION 3
