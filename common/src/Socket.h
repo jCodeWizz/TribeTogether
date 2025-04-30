@@ -15,7 +15,7 @@ namespace TT {
         ~Socket();
 
         void start();
-        void const send(int32_t headerType, const std::vector<uint8_t>& data, const std::string& ip, uint16_t port);
+        void send(int32_t headerType, const std::vector<uint8_t>& data, const std::string& ip, uint16_t port) const;
         void setOnPacketReceived(std::function<void(const Socket&, const Packet&)> callback);
 
     private:

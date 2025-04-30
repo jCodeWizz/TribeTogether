@@ -78,7 +78,7 @@ namespace TT {
 
 
     void Socket::send(int32_t headerType, const std::vector<uint8_t>& data,
-                      const std::string& ip, uint16_t port) {
+                      const std::string& ip, uint16_t port) const {
         sockaddr_in to{};
         to.sin_family = AF_INET;
         to.sin_port = htons(port);

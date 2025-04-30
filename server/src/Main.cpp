@@ -9,7 +9,7 @@ void received(const TT::Socket& s, const TT::Packet& p) {
 
     if (p.headerType == NW_INIT) {
         std::cout << "New client connected!" << "\n";
-        s.send(NW_CONFIRM_INIT, std::vector<uint8_t>(), p.senderIp, p.senderPort);
+        s.send(NW_INIT_CONFIRM, std::vector<uint8_t>(), p.senderIp, p.senderPort);
     }
 }
 
